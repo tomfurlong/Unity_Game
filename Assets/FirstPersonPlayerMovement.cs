@@ -5,7 +5,7 @@ using UnityEngine;
 public class FirstPersonPlayerMovement : MonoBehaviour
 {
     public CharacterController controller;
-    public float speed = 12f;
+    public float speed = 9f;
     public float gravity = -9.81f;
     Vector3 velocity;
     public Transform groundCheck;
