@@ -1,9 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FirstPersonPlayerMovement : MonoBehaviour
 {
+    public int maxHealth = 100;
+    public int minHealth = 0;
+    public int health = 0;
+    public HealthBar healthBar;
     public CharacterController controller;
     public float speed = 9f;
     public float gravity = -9.81f;
@@ -13,10 +18,12 @@ public class FirstPersonPlayerMovement : MonoBehaviour
     public LayerMask groundMask;
     bool isGrounded;
     public float jumpHeight = 5f;
+    AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
-        
+        health = maxHealth;
+        healthBar.SetMaxHealth(maxHealth);
     }
 
     // Update is called once per frame
@@ -43,8 +50,45 @@ public class FirstPersonPlayerMovement : MonoBehaviour
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
 
-
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TakeDamage(20);
+        }
+
     }
+
+    void OnCollisionEnter(Collision targetObj)
+    {
+        Debug.Log("Finish");
+        if (targetObj.gameObject.tag == "Finish")
+        {
+            print("Finish");
+            SceneManager.LoadScene("Ending_mcq");
+        }
+        if (targetObj.gameObject.tag == "Fire")
+        {
+            foreach (ContactPoint contact in targetObj.contacts)
+            {
+                print("Walked into fire");
+                Debug.DrawRay(contact.point, contact.normal, Color.white);
+            }
+            if (targetObj.relativeVelocity.magnitude > 2)
+                audioSource.Play();
+        }
+    }
+
+    void TakeDamage(int damage)
+    {
+        health -= damage;
+        healthBar.SetHealth(health);
+    }
+
 }
