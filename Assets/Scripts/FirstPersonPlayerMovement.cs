@@ -12,18 +12,18 @@ public class FirstPersonPlayerMovement : MonoBehaviour
     public CharacterController controller;
     public float speed = 9f;
     public float gravity = -9.81f;
-    Vector3 velocity;
+    public Vector3 velocity;
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
     bool isGrounded;
     public float jumpHeight = 5f;
-    AudioSource audioSource;
     // Start is called before the first frame update
     void Start()
     {
         health = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
+        controller = GetComponent<CharacterController>();
     }
 
     // Update is called once per frame
@@ -53,37 +53,62 @@ public class FirstPersonPlayerMovement : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            
-        }
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             TakeDamage(20);
         }
 
+        CheckHealth(health);
+
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Finish")
+        {
+            SceneManager.LoadScene("Ending_mcq");
+        }
+        if (other.gameObject.tag == "Desk")
+        {
+            TakeDamage(20);
+        }
+        if (other.gameObject.tag == "ObjOnFire")
+        {
+            TakeDamage(20); 
+        }
+    } 
 
     void OnCollisionEnter(Collision targetObj)
     {
-        Debug.Log("Finish");
         if (targetObj.gameObject.tag == "Finish")
         {
-            print("Finish");
+            Debug.Log("Finish");
             SceneManager.LoadScene("Ending_mcq");
+        }
+        if (targetObj.gameObject.tag == "Desk")
+        {
+            Debug.Log("Finish");
         }
         if (targetObj.gameObject.tag == "Fire")
         {
+            Debug.Log("Fuck hello");
             foreach (ContactPoint contact in targetObj.contacts)
             {
-                print("Walked into fire");
+                Debug.Log("Walked into fire");
                 Debug.DrawRay(contact.point, contact.normal, Color.white);
             }
-            if (targetObj.relativeVelocity.magnitude > 2)
-                audioSource.Play();
         }
     }
+
+    void CheckHealth(int health)
+    {
+        if (health <= 0)
+        {
+            SceneManager.LoadScene("Level1");
+        }
+    }
+
 
     void TakeDamage(int damage)
     {

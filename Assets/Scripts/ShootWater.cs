@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class ShootWater : MonoBehaviour
 {
-    public Camera camera;
+    public Camera cam;
     private Vector3 destination;
     public GameObject projectile;
+    public float speed;
     public Transform firePoint;
     // Start is called before the first frame update
     void Start()
@@ -17,7 +18,7 @@ public class ShootWater : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetMouseButtonDown(0))
         {
             Shoot();
         }
@@ -25,7 +26,7 @@ public class ShootWater : MonoBehaviour
 
     void Shoot()
     {
-        Ray ray = camera.ViewportPointToRay(new Vector3(Input.mousePosition.x, 0.5f, 0.5f));
+        Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit))
@@ -33,7 +34,7 @@ public class ShootWater : MonoBehaviour
             destination = hit.point;
         }
         else
-            destination = ray.GetPoint(1000);
+            destination = ray.GetPoint(500);
 
         InstantiateProjectile(firePoint);
     }
@@ -41,5 +42,6 @@ public class ShootWater : MonoBehaviour
     void InstantiateProjectile(Transform firePoint)
     {
         var projectileObj = Instantiate(projectile, firePoint.position, Quaternion.identity) as GameObject;
+        projectileObj.GetComponent<Rigidbody>().velocity = (destination- firePoint.position).normalized * speed;
     }
 }
